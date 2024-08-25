@@ -16,15 +16,21 @@ Mappings:
     local:
       resourceprefix: 'local-'
       subscriptionPlanTableName: 'local-subscription-plan'
-      customerTableName: 'local-subscription-plan'
+      customerTableName: 'local-customer'
+      invoiceTableName: 'local-invoice'
+      paymentTableName: 'local-payment'
     dev:
       resourceprefix: 'dev-'
       subscriptionPlanTableName: 'dev-subscription-plan'
-      customerTableName: 'dev-subscription-plan'
+      customerTableName: 'dev-customer'
+      invoiceTableName: 'dev-invoice'
+      paymentTableName: 'dev-payment'
     prod:
       resourceprefix: 'prod-'
       subscriptionPlanTableName: 'prod-subscription-plan'
-      customerTableName: 'prod-subscription-plan'
+      customerTableName: 'prod-customer'
+      invoiceTableName: 'prod-invoice'
+      paymentTableName: 'prod-payment'
 
 Parameters:
   Environment:
@@ -88,10 +94,10 @@ Resources:
         - AWSLambdaBasicExecutionRole
         - DynamoDBWritePolicy:
             TableName:
-              !FindInMap [EnvironmentConfig, !Ref Environment, orderTableName]
+              !FindInMap [EnvironmentConfig, !Ref Environment, subscriptionPlanTableName]
         - DynamoDBReadPolicy:
             TableName:
-              !FindInMap [EnvironmentConfig, !Ref Environment, orderTableName]
+              !FindInMap [EnvironmentConfig, !Ref Environment, subscriptionPlanTableName]
 
   AssignSubscriptionPlanFunction:
     Type: AWS::Serverless::Function
@@ -124,11 +130,112 @@ Resources:
         - AWSLambdaBasicExecutionRole
         - DynamoDBWritePolicy:
             TableName:
-              !FindInMap [EnvironmentConfig, !Ref Environment, orderTableName]
+              !FindInMap [EnvironmentConfig, !Ref Environment, subscriptionPlanTableName]
         - DynamoDBReadPolicy:
             TableName:
-              !FindInMap [EnvironmentConfig, !Ref Environment, orderTableName]
+              !FindInMap [EnvironmentConfig, !Ref Environment, subscriptionPlanTableName]
+        - DynamoDBWritePolicy:
+            TableName:
+              !FindInMap [EnvironmentConfig, !Ref Environment, customerTableName]
+        - DynamoDBReadPolicy:
+            TableName:
+              !FindInMap [EnvironmentConfig, !Ref Environment, customerTableName]
 
+  ProcessPaymentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: build/process-payment
+      Handler: index.handler
+      Runtime: nodejs20.x
+      FunctionName:
+        !Join [
+          '',
+          [
+            !FindInMap [EnvironmentConfig, !Ref Environment, resourceprefix],
+            'process-payment',
+          ],
+        ]
+      Events:
+        SubscriptionPlan:
+          Type: Api
+          Properties:
+            Path: /customer/{id}/payments
+            Method: post
+      Environment:
+        Variables:
+          DynamoDBEndpoint: !Sub '${DynamoDBEndpoint}'
+          InvoiceTableName:
+            !FindInMap [EnvironmentConfig, !Ref Environment, invoiceTableName]
+          PaymentTableName:
+            !FindInMap [EnvironmentConfig, !Ref Environment, paymentTableName]
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBWritePolicy:
+            TableName:
+              !FindInMap [EnvironmentConfig, !Ref Environment, invoiceTableName]
+        - DynamoDBReadPolicy:
+            TableName:
+              !FindInMap [EnvironmentConfig, !Ref Environment, invoiceTableName]
+        - DynamoDBWritePolicy:
+            TableName:
+              !FindInMap [EnvironmentConfig, !Ref Environment, paymentTableName]
+        - DynamoDBReadPolicy:
+            TableName:
+              !FindInMap [EnvironmentConfig, !Ref Environment, paymentTableName]
+
+  PaymentRetrySNSTopic:
+    Type: 'AWS::SNS::Topic'
+    Properties:
+      DisplayName: 'Payment Retry SNS Topic'
+      TopicName: "${Environment}:payment-retry-sns-topic"
+      Tags:
+        - Key: Project
+          Value: !Ref Project
+        - Key: Environment
+          Value: !Ref Environment
+
+  PaymentRetryQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      Tags:
+        - Key: Project
+          Value: !Ref Project
+        - Key: Environment
+          Value: !Ref Environment
+      FifoQueue: true
+      QueueName: "${Environment}:payment-retry-queue"
+
+  PaymentRetryQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref PaymentRetryQueue
+      PolicyDocument:
+        Version: "2012-10-17"
+        Id: PaymentRetryQueuePolicy
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - sns.amazonaws.com
+            Action:
+              - sqs:SendMessage
+            Resource:
+              - !GetAtt PaymentRetryQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn:
+                  Fn::ImportValue: !Sub "${Environment}:payment-retry-sns-topic"
+
+  PaymentRetrySubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      Endpoint: !GetAtt PaymentRetryQueue.Arn
+      RawMessageDelivery: true
+      TopicArn:
+        Fn::ImportValue: !Sub "ent:${Environment}:payment-retry-sns-topic"
+  
 Outputs:
   BillingApi:
     Description: "API Gateway endpoint URL"

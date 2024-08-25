@@ -1,7 +1,7 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 
 @JsonObject()
-export default class Author {
+export default class CustomError {
   @JsonProperty({ name: 'code' })
   private code!: string;
 
