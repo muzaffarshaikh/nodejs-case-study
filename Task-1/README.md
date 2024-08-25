@@ -73,4 +73,12 @@ sam local invoke "CreateSubscriptionPlanFunction"  -e events/create-subscription
 
 Note: profile parameter is optional.
 
+#### Starting the API locally
+
+Command
+
+```
+sam local start-api
+```
+
 ## Deployment Strategy
