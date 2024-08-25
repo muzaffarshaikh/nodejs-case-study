@@ -1,3 +1,4 @@
 import ISubscriptionPlanService from './subscription-plan-service';
+import ICustomerService from './customer-service';
 
-export { ISubscriptionPlanService }
+export { ICustomerService, ISubscriptionPlanService };

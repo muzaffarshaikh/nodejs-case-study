@@ -8,6 +8,8 @@ const config: Configuration = {
   entry: {
     'create-subscription-plan':
       './src/handlers/create-subscription-plan/create-subscription-plan.ts',
+    'assign-subscription-plan':
+      './src/handlers/assign-subscription-plan-to-customer/assign-subscription-plan-to-customer.ts',
   },
   // The output property tells webpack where to emit the bundles it creates and how to name these files
   output: {
