@@ -31,4 +31,17 @@ export default class CustomerRepository implements ICustomerRepository {
       throw error;
     }
   }
+
+  async getAllCustomers(): Promise<Array<Customer>> {
+    try {
+      const customers = [];
+      for await (const customer of this.dataMapper.scan(Customer)) {
+        customers.push(customer);
+      }
+      return customers;
+    } catch (error) {
+      console.error('CustomerRepository.createCustomer() Error:', error);
+      throw error;
+    }
+  }
 }

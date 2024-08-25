@@ -11,6 +11,7 @@ import { SubscriptionPlan } from '../../models';
 import { Response } from '../../dto/billing-api/subscription-plans/POST';
 import TYPES from '../../inversify/types';
 import CustomError from '../../utils/custom-error';
+import { SubscriptionStatus } from '../../models/subscription-plan';
 
 enum ErrorCodes {
   FORBIDDEN_ERROR = 'error.billing-api.create-subscription-plan.forbidden',
@@ -35,7 +36,6 @@ export default class Controller implements ICreateSubscriptionPlanController {
   async process(
     config: ICreateSubscriptionPlanConfig
   ): Promise<ICreateSubscriptionPlanResult> {
-    // TODO: Async?
     try {
       const request = config.getRequest();
       const validationResult = request.validate();
@@ -52,6 +52,9 @@ export default class Controller implements ICreateSubscriptionPlanController {
         SubscriptionPlan
       ) as SubscriptionPlan;
       subscriptionPlan.setID(UUIDv4());
+      // Marking plan status as inactive initially when creating. Incase the plan need not go live as soon as adding it.
+      // A new API to update subscription status needs to be implemented.
+      subscriptionPlan.setStatus(SubscriptionStatus.INACTIVE);
 
       const createSubscriptionPlanResponse =
         await this.subscriptionPlanService.createSubscriptionPlan(

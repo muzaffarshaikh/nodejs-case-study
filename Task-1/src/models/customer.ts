@@ -14,34 +14,24 @@ export default class Customer {
   private name!: string;
 
   @attribute()
-  @JsonProperty({ name: 'subscriptionPlan' })
+  @JsonProperty({ name: 'currentSubscriptionPlan' })
   private subscriptionPlan!: SubscriptionPlan;
 
   @attribute()
   @JsonProperty({ name: 'isSubscriptionActive' })
   private isSubscriptionActive!: boolean;
 
-  @attribute()
-  @JsonProperty({ name: 'subscriptionHistory' })
-  private subscriptionHistory!: Array<SubscriptionHistory>;
-
   setID(id: string): void {
     this.id = id;
+  }
+
+  getID(): string {
+    return this.id;
   }
 
   setSubscriptionPlan(subscriptionPlan: SubscriptionPlan): void {
     this.subscriptionPlan = subscriptionPlan;
   }
-
-  // setSubscriptionHistory(
-  //   subscriptionHistory: Array<SubscriptionHistory>
-  // ): void {
-  //   this.subscriptionHistory = subscriptionHistory;
-  // }
-
-  // getSubscriptionHistory(): Array<SubscriptionHistory> {
-  //   return this.subscriptionHistory;
-  // }
 
   activateSubscription(): void {
     this.isSubscriptionActive = true;

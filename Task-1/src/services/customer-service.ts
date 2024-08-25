@@ -12,7 +12,7 @@ export default class CustomerService implements ICustomerService {
     @inject(TYPES.CustomerRepository)
     customerRepository: ICustomerRepository
   ) {
-    this.customerRepository = this.customerRepository;
+    this.customerRepository = customerRepository;
   }
 
   async updateCustomer(customer: Customer): Promise<Customer> {
@@ -29,6 +29,15 @@ export default class CustomerService implements ICustomerService {
       return await this.customerRepository.getCustomerByID(customerID);
     } catch (error) {
       console.error('CustomerService.getCustomerByID() Error:', error);
+      throw error;
+    }
+  }
+
+  async getAllCustomers(): Promise<Array<Customer>> {
+    try {
+      return await this.customerRepository.getAllCustomers();
+    } catch (error) {
+      console.error('CustomerService.getAllCustomers() Error:', error);
       throw error;
     }
   }
