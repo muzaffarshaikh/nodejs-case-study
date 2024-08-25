@@ -14,7 +14,7 @@ export default class SubscriptionPlanService
     @inject(TYPES.SubscriptionPlanRepository)
     subscriptionPlanRepository: ISubscriptionPlanRepository
   ) {
-    this.subscriptionPlanRepository = this.subscriptionPlanRepository;
+    this.subscriptionPlanRepository = subscriptionPlanRepository;
   }
 
   async createSubscriptionPlan(

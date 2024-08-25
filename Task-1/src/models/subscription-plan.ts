@@ -9,8 +9,13 @@ export enum SubscriptionName {
   ENTERPRISE = 'ENTERPRISE',
 }
 
+export enum SubscriptionStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+}
+
 @JsonObject()
-export default class Request {
+export default class SubscriptionPlan {
   @hashKey()
   @JsonProperty({ name: 'id' })
   private id!: string;
@@ -23,7 +28,15 @@ export default class Request {
   @JsonProperty({ name: 'pricing' })
   private pricing!: Pricing;
 
+  @attribute()
+  @JsonProperty({ name: 'status' })
+  private status!: SubscriptionStatus;
+
   setID(value: string): void {
     this.id = value;
+  }
+
+  setStatus(status: SubscriptionStatus): void {
+    this.status = status;
   }
 }
