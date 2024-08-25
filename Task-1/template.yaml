@@ -1,0 +1,97 @@
+resourceprefixAWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  billing-app
+
+Globals:
+  Function:
+    Timeout: 60
+    Runtime: nodejs18.x
+    Tags:
+      Project: !Ref Project
+      Environment: !Ref Environment
+
+Mappings:
+  EnvironmentConfig:
+    local:
+      resourceprefix: 'local-'
+      subscriptionPlanTableName: 'local-subscription-plan'
+    dev:
+      resourceprefix: 'dev-'
+      subscriptionPlanTableName: 'dev-subscription-plan'
+    prod:
+      resourceprefix: 'prod-'
+      subscriptionPlanTableName: 'prod-subscription-plan'
+
+Parameters:
+  Environment:
+    Type: String
+    Description: Available deployment environments
+    AllowedValues:
+      - local
+      - dev
+      - prod
+  Project:
+    Description: This tag will be used to identify the application to which the resources belong to.
+    Type: String
+    Default: BillingAPI
+  DynamoDBEndpoint:
+    Type: AWS::SSM::Parameter::Value<String>
+    Description: Dynamo DB Endpoint to save the details
+
+Resources:
+  BillingAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Sub '${Environment}'
+      Name:
+        !Join [
+          '',
+          [
+            !FindInMap [EnvironmentConfig, !Ref Environment, resourceprefix],
+            'billing-api',
+          ],
+        ]
+      Tags:
+        Project: !Ref Project
+        Environment: !Ref Environment
+
+  CreateSubscriptionPlanFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: build/create-order
+      Handler: index.handler
+      Runtime: nodejs20.x
+      FunctionName:
+        !Join [
+          '',
+          [
+            !FindInMap [EnvironmentConfig, !Ref Environment, resourceprefix],
+            'create-order',
+          ],
+        ]
+      Events:
+        SubscriptionPlan:
+          Type: Api
+          Properties:
+            Path: /subscription-plans
+            Method: post
+      Environment:
+        Variables:
+          DynamoDBEndpoint: !Sub '${DynamoDBEndpoint}'
+          SubscriptionPlanTableName:
+            !FindInMap [EnvironmentConfig, !Ref Environment, subscriptionPlanTableName]
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AWSXrayWriteOnlyAccess
+        - DynamoDBWritePolicy:
+            TableName:
+              !FindInMap [EnvironmentConfig, !Ref Environment, orderTableName]
+        - DynamoDBReadPolicy:
+            TableName:
+              !FindInMap [EnvironmentConfig, !Ref Environment, orderTableName]
+
+Outputs:
+  BillingApi:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"

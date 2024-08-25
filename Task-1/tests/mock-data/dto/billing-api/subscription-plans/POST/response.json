@@ -4,6 +4,6 @@
   "pricing": {
     "price": 50,
     "currency": "USD",
-    "billingCycle": "MONTHLY"
+    "billingCycle": 30
   }
 }
