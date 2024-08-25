@@ -1,0 +1,8 @@
+{
+  "name": "ENTERPRISE",
+  "pricing": {
+    "price": 50,
+    "currency": "USD",
+    "billingCycle": "MONTHLY"
+  }
+}

@@ -1,0 +1,47 @@
+name: prod-release
+
+on:
+  push:
+    branches: [main]
+
+jobs: 
+  prod-release:
+    name: Production Branch Release Job
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Depth of Git graph to fetch
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{matrix.node-version}}
+      - name: Install Semantic Release via NPM
+        run: npm install -g semantic-release
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
+      - name: Pull Request for Development Branch
+        uses: repo-sync/pull-request@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_branch: main
+          destination_branch: dev
+          pr_title: "chore: Merge into dev from main"
+          pr_body: "This is an automated PR to merge changes into Development branch"
+          pr_label: "automated_pr"
+      - name: PR Output URL
+        run: echo ${{steps.open-pr.outputs.pr_url}} 
+      - name: PR Output Number
+        run: echo ${{steps.open-pr.outputs.pr_number}} 
+
+# References:
+# 1. https://semantic-release.gitbook.io/semantic-release/recipes/ci-configurations/github-actions
+# 2. https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs 
+# 3. https://github.com/repo-sync/pull-request/blob/main/action.yml 

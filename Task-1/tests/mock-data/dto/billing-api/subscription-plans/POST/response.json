@@ -1,0 +1,9 @@
+{
+  "id": "8e40a4cb-4ce2-43c9-8380-315c4222cdf6",
+  "name": "ENTERPRISE",
+  "pricing": {
+    "price": 50,
+    "currency": "USD",
+    "billingCycle": "MONTHLY"
+  }
+}

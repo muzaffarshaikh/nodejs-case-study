@@ -1,0 +1,321 @@
+openapi: 3.0.0
+info:
+  description: This document describes the endpoints in the billing API
+  version: 1.0.0
+  title: Billing API
+tags:
+  - name: billing
+
+paths:
+  "/subscription-plans":
+    post:
+      tags:
+        - subscription-plan
+      summary: Create subscription plan
+      description: "API to create a subscription plan"
+      operationId: create-subscription-plan
+      responses:
+        "201":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateSubscriptionPlanResponse"
+              example:
+                id: "xyz-xyz-xyz-yyyy"
+                name: "ENTERPRISE"
+                pricing: { price: 50, currency: USD, billingCycle: MONTHLY }
+        "400":
+          description: Invalid Request
+        "500":
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSubscriptionPlanRequest"
+            example:
+              name: "ENTERPRISE"
+              pricing: { price: 50, currency: USD, billingCycle: MONTHLY }
+  
+    patch: 
+      tags:
+        - subscription-plan
+      summary: Update subscription plan
+      description: "API to update and manage a subscription plan"
+      operationId: update-subscription-plan
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateSubscriptionPlanResponse"
+              example:
+                id: "xyz-xyz-xyz-yyyy"
+                name: "ENTERPRISE"
+                pricing: { price: 110, currency: USD, billingCycle: MONTHLY }
+        "400":
+          description: Invalid Request
+        "500":
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSubscriptionPlanRequest"
+            example:
+              pricing: { price: 100, currency: USD, billingCycle: MONTHLY }
+
+  "/customers/{customerID}/subscription-plan":
+    post:
+      tags:   
+        - customer
+      summary: Assign subscription plan to customer
+      description: "API to assign subscription plan to customer"
+      operationId: assign-subscription-plan-to-customer
+      parameters:
+        - in: path
+          name: customerID
+          description: Customer ID
+          schema:
+            type: string
+          required: true
+      responses:
+        "201":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssignSubscriptionPlanToCustomerResponse"
+              example:
+                id: "xxxx-xxxx-xxxx-xxxx"
+                subscriptionPlan: {                
+                  id: "xxxx-xxxx-xxxx-xxxx",
+                  name: "ENTERPRISE",
+                  startDate: "2024-08-24T11:00:00.000Z"
+                }
+        "400":
+          description: Invalid Request
+        "500":
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignSubscriptionPlanToCustomerRequest"
+            example:
+              subscriptionPlanID: "xxxx-xxxx-xxxx-xxxx"
+
+  "/customers/{customerID}/payments":
+    post:
+      tags:   
+        - customer
+      summary: Create payment for a customer
+      description: "API to create a payment for a specific customer"
+      operationId: create-payment-for-customer
+      parameters:
+        - in: path
+          name: customerId
+          description: Customer ID
+          schema:
+            type: string
+          required: true
+      responses:
+        "201":
+          description: Paid Successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreatePaymentForCustomerResponse"
+              example:
+                id: "xxxx-xxxx-xxxx-xxxx"
+                amount: 100.00
+                currency: "USD"
+                paymentMethod: "credit_card"
+                invoiceID: "INVOICE_2349876143"
+                status: "completed"
+                createdAt: "2024-08-24T11:00:00.000Z"
+        "400":
+          description: Invalid Request
+        "500":
+          description: Internal Server Error
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePaymentForCustomerRequest"
+            example:
+              amount: 100.00
+              currency: "USD"
+              paymentMethod: "credit_card"
+              invoiceID: "INVOICE_2349876143"
+
+components:
+  schemas:
+    CreateSubscriptionPlanRequest:
+      type: object
+      required:
+        - name
+        - pricing
+      properties:
+        name:
+          type: enum
+          $ref: '#/components/schemas/SubscriptionPlanName'
+        pricing:
+          type: object
+          $ref: '#/components/schemas/Pricing'
+
+    CreateSubscriptionPlanResponse:
+      type: object
+      required:
+        - id
+        - name
+        - pricing
+      properties:
+        id:
+          type: string
+        name:
+          type: enum
+          $ref: '#/components/schemas/SubscriptionPlanName'
+        pricing:
+          type: object
+          $ref: '#/components/schemas/Pricing'
+
+    UpdateSubscriptionPlanRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: enum
+          $ref: '#/components/schemas/SubscriptionPlanName'
+        pricing:
+          type: object
+          $ref: '#/components/schemas/Pricing'
+    
+    UpdateSubscriptionPlanResponse:
+      type: object
+      required:
+        - id
+        - name
+        - pricing
+      properties:
+        id:
+          type: string
+        name:
+          type: enum
+          $ref: '#/components/schemas/SubscriptionPlanName'
+        pricing:
+          type: object
+          $ref: '#/components/schemas/Pricing'
+
+    AssignSubscriptionPlanToCustomerRequest:
+      type: object
+      required:
+        - subscriptionPlanID
+      properties:
+        subscriptionPlanID:
+          type: string
+
+    AssignSubscriptionPlanToCustomerResponse:
+      type: object
+      required:
+        - id
+        - subscriptionPlan
+      properties:
+        id:
+          type: string
+        subscriptionPlan:
+          type: object
+          $ref: '#/components/schemas/AssignSubscriptionPlanToCustomerResponseSubscriptionPlan'
+
+    CreatePaymentForCustomerRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        currency:
+          type: string
+        paymentMethod:
+          type: string
+          $ref: '#/components/schemas/PaymentMethod'
+        invoiceID:
+          type: string
+
+    CreatePaymentForCustomerResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        amount:
+          type: number
+          format: float
+        currency:
+          type: string
+        paymentMethod:
+          type: string
+          $ref: '#/components/schemas/PaymentMethod'
+        customerId:
+          type: string
+        orderId:
+          type: string
+        status:
+          type: string
+        createdAt:
+          type: string
+          format: date-time-iso-8601
+
+    AssignSubscriptionPlanToCustomerResponseSubscriptionPlan:
+      type: object
+      required:
+        - id
+        - name 
+        - startDate
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        startDate:
+          type: string
+          format: date-time-iso-8601
+        oldSubscriptionPlanID:
+          type: string
+
+    SubscriptionPlanName:
+      type: string
+      enum:
+        - BASIC
+        - PRO
+        - ENTERPRISE
+    
+    BillingCycle:
+      type: string
+      enum:
+        - MONTHLY
+        - QUARTERLY
+        - SEMI_ANNUAL
+        - ANNUAL
+
+    PaymentMethod: 
+      type: string
+      enum:
+        - CREDIT_CARD
+        - DEBIT_CARD
+        - PAYPAL
+        - APPLE_PAY
+
+    Pricing:
+      type: object
+      required:
+        - price 
+        - currency
+        - billingCycle
+      properties:
+        price:
+          type: number
+        currency:
+          type: string
+        billingCycle:
+          type: enum
+          $ref: '#/components/schemas/BillingCycle'
