@@ -1,0 +1,31 @@
+name: dev-release
+
+on:
+  push:
+    branches: [dev]
+
+jobs: 
+  dev-release:
+    name: Development Branch Release Job
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{matrix.node-version}}
+      - name: Install Semantic Release via NPM
+        run: npm install -g semantic-release
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
+
+# References:
+# 1. https://semantic-release.gitbook.io/semantic-release/recipes/ci-configurations/github-actions
+# 2. https://docs.github.com/en/actions/using-jobs/using-a-matrix-for-your-jobs 
