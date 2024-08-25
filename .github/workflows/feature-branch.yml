@@ -1,0 +1,21 @@
+name: feature-branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: "Name of the branch starts with 'feat/' prefix"
+        required: true
+
+jobs: 
+  feature-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: dev
+      - name: Feature Branch
+        run: git checkout -b feat/${{github.event.inputs.name}} dev
+      - name: Pushing Branch to Origin
+        run: git push origin feat/${{github.event.inputs.name}}
