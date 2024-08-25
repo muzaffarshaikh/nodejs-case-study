@@ -16,7 +16,7 @@ export default class CustomerRepository implements ICustomerRepository {
     try {
       return await this.dataMapper.update(customer);
     } catch (error) {
-      console.error('CustomerRepository.createCustomer() Error:', error);
+      console.error('CustomerRepository.updateCustomer() Error:', error);
       throw error;
     }
   }
@@ -40,7 +40,7 @@ export default class CustomerRepository implements ICustomerRepository {
       }
       return customers;
     } catch (error) {
-      console.error('CustomerRepository.createCustomer() Error:', error);
+      console.error('CustomerRepository.getAllCustomers() Error:', error);
       throw error;
     }
   }

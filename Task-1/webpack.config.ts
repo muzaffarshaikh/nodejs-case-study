@@ -10,6 +10,9 @@ const config: Configuration = {
       './src/handlers/create-subscription-plan/create-subscription-plan.ts',
     'assign-subscription-plan':
       './src/handlers/assign-subscription-plan-to-customer/assign-subscription-plan-to-customer.ts',
+    'generate-invoices':
+      './src/handlers/generate-invoices/generate-invoices.ts',
+    'process-payment': './src/handlers/process-payment/process-payment.ts',
   },
   // The output property tells webpack where to emit the bundles it creates and how to name these files
   output: {
