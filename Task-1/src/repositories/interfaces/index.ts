@@ -1,3 +1,4 @@
 import ISubscriptionPlanRepository from './subscription-plan-repository';
+import ICustomerRepository from './customer-repository';
 
-export { ISubscriptionPlanRepository }
+export { ICustomerRepository, ISubscriptionPlanRepository };

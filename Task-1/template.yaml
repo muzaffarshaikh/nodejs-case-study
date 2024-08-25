@@ -16,12 +16,15 @@ Mappings:
     local:
       resourceprefix: 'local-'
       subscriptionPlanTableName: 'local-subscription-plan'
+      customerTableName: 'local-subscription-plan'
     dev:
       resourceprefix: 'dev-'
       subscriptionPlanTableName: 'dev-subscription-plan'
+      customerTableName: 'dev-subscription-plan'
     prod:
       resourceprefix: 'prod-'
       subscriptionPlanTableName: 'prod-subscription-plan'
+      customerTableName: 'prod-subscription-plan'
 
 Parameters:
   Environment:
@@ -59,7 +62,7 @@ Resources:
   CreateSubscriptionPlanFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: build/create-order
+      CodeUri: build/create-subscription-plan
       Handler: index.handler
       Runtime: nodejs20.x
       FunctionName:
@@ -67,7 +70,7 @@ Resources:
           '',
           [
             !FindInMap [EnvironmentConfig, !Ref Environment, resourceprefix],
-            'create-order',
+            'create-subscription-plan',
           ],
         ]
       Events:
@@ -83,7 +86,42 @@ Resources:
             !FindInMap [EnvironmentConfig, !Ref Environment, subscriptionPlanTableName]
       Policies:
         - AWSLambdaBasicExecutionRole
-        - AWSXrayWriteOnlyAccess
+        - DynamoDBWritePolicy:
+            TableName:
+              !FindInMap [EnvironmentConfig, !Ref Environment, orderTableName]
+        - DynamoDBReadPolicy:
+            TableName:
+              !FindInMap [EnvironmentConfig, !Ref Environment, orderTableName]
+
+  AssignSubscriptionPlanFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: build/assign-subscription-plan-to-customer
+      Handler: index.handler
+      Runtime: nodejs20.x
+      FunctionName:
+        !Join [
+          '',
+          [
+            !FindInMap [EnvironmentConfig, !Ref Environment, resourceprefix],
+            'assign-subscription-plan-to-customer',
+          ],
+        ]
+      Events:
+        SubscriptionPlan:
+          Type: Api
+          Properties:
+            Path: /customer/{id}/subscription-plan
+            Method: post
+      Environment:
+        Variables:
+          DynamoDBEndpoint: !Sub '${DynamoDBEndpoint}'
+          SubscriptionPlanTableName:
+            !FindInMap [EnvironmentConfig, !Ref Environment, subscriptionPlanTableName]
+          CustomerTableName:
+            !FindInMap [EnvironmentConfig, !Ref Environment, customerTableName]
+      Policies:
+        - AWSLambdaBasicExecutionRole
         - DynamoDBWritePolicy:
             TableName:
               !FindInMap [EnvironmentConfig, !Ref Environment, orderTableName]

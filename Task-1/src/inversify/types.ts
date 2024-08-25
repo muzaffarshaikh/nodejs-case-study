@@ -5,8 +5,17 @@ const TYPES = {
   CreateSubscriptionPlanConfig: Symbol.for('CreateSubscriptionPlanConfig'),
   CreateSubscriptionPlanResult: Symbol.for('CreateSubscriptionPlanResult'),
 
+  AssignSubscriptionPlanController: Symbol.for(
+    'AssignSubscriptionPlanController'
+  ),
+  AssignSubscriptionPlanConfig: Symbol.for('AssignSubscriptionPlanConfig'),
+  AssignSubscriptionPlanResult: Symbol.for('AssignSubscriptionPlanResult'),
+
   SubscriptionPlanService: Symbol.for('SubscriptionPlanService'),
   SubscriptionPlanRepository: Symbol.for('SubscriptionPlanRepository'),
+
+  CustomerService: Symbol.for('CustomerService'),
+  CustomerRepository: Symbol.for('CustomerRepository'),
 
   DBURL: Symbol.for('DBURL'),
   DynamodbDataMapper: Symbol.for('DynamodbDataMapper'),

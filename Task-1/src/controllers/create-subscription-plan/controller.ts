@@ -32,9 +32,10 @@ export default class Controller implements ICreateSubscriptionPlanController {
     this.subscriptionPlanService = subscriptionPlanService;
   }
 
-  process(
+  async process(
     config: ICreateSubscriptionPlanConfig
-  ): ICreateSubscriptionPlanResult {
+  ): Promise<ICreateSubscriptionPlanResult> {
+    // TODO: Async?
     try {
       const request = config.getRequest();
       const validationResult = request.validate();
@@ -53,7 +54,9 @@ export default class Controller implements ICreateSubscriptionPlanController {
       subscriptionPlan.setID(UUIDv4());
 
       const createSubscriptionPlanResponse =
-        this.subscriptionPlanService.createSubscriptionPlan(subscriptionPlan);
+        await this.subscriptionPlanService.createSubscriptionPlan(
+          subscriptionPlan
+        );
 
       const response = jsonSerializer.deserializeObject(
         createSubscriptionPlanResponse,

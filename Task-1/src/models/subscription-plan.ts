@@ -1,18 +1,29 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
+import { attribute, hashKey } from '@aws/dynamodb-data-mapper-annotations';
 import Pricing from './pricing';
+
+export enum SubscriptionName {
+  FREE = 'FREE',
+  BASIC = 'BASIC',
+  PRO = 'PRO',
+  ENTERPRISE = 'ENTERPRISE',
+}
 
 @JsonObject()
 export default class Request {
+  @hashKey()
   @JsonProperty({ name: 'id' })
   private id!: string;
 
+  @attribute()
   @JsonProperty({ name: 'name' })
   private name!: string;
 
+  @attribute()
   @JsonProperty({ name: 'pricing' })
   private pricing!: Pricing;
 
   setID(value: string): void {
-    this.id = value
+    this.id = value;
   }
 }
