@@ -1,6 +1,5 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
 import { JsonSerializer } from 'typescript-json-serializer';
-import * as AWS from 'aws-sdk';
 import { buildApiGatewayCreatedResponse } from 'aws-lambda-response-builder';
 import {
   IConfig as IProcessPaymentControllerConfig,
@@ -34,21 +33,6 @@ export const handler: APIGatewayProxyHandler = async (event) => {
     response = buildApiGatewayCreatedResponse(result.getResponse());
   } catch (error) {
     console.error('Handler error: ', error);
-
-    // Incase of any error, publish the payment payload to SNS for retrying.
-    const sns = new AWS.SNS({ region: process.env.AWSRegion });
-    const requestRetryCount = request.getRetryCount();
-    const retryCount = requestRetryCount ? requestRetryCount + 1 : 1;
-    request.setRetryCount(retryCount);
-    request.setCustomerID(customerID);
-    const params = {
-      Message: JSON.stringify(request),
-      TopicArn: process.env.OrderRejectedEventTopicARN,
-    };
-
-    const publishedEvent = await sns.publish(params).promise();
-    console.log(`Published event: ${JSON.stringify(publishedEvent)}`);
-
     throw error; // TODO: Replace this with custom error in the src/utils/custom-error file
   }
   console.log('response:', response);
