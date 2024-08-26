@@ -16,18 +16,21 @@ Mappings:
     local:
       resourceprefix: 'local-'
       subscriptionPlanTableName: 'local-subscription-plan'
+      subscriptionTableName: 'local-subscription'
       customerTableName: 'local-customer'
       invoiceTableName: 'local-invoice'
       paymentTableName: 'local-payment'
     dev:
       resourceprefix: 'dev-'
       subscriptionPlanTableName: 'dev-subscription-plan'
+      subscriptionTableName: 'dev-subscription'      
       customerTableName: 'dev-customer'
       invoiceTableName: 'dev-invoice'
       paymentTableName: 'dev-payment'
     prod:
       resourceprefix: 'prod-'
       subscriptionPlanTableName: 'prod-subscription-plan'
+      subscriptionTableName: 'prod-subscription'
       customerTableName: 'prod-customer'
       invoiceTableName: 'prod-invoice'
       paymentTableName: 'prod-payment'
@@ -140,6 +143,13 @@ Resources:
         - DynamoDBReadPolicy:
             TableName:
               !FindInMap [EnvironmentConfig, !Ref Environment, customerTableName]
+        - DynamoDBWritePolicy:
+            TableName:
+              !FindInMap [EnvironmentConfig, !Ref Environment, subscriptionTableName]
+        - DynamoDBReadPolicy:
+            TableName:
+              !FindInMap [EnvironmentConfig, !Ref Environment, subscriptionTableName]
+
 
   ProcessPaymentFunction:
     Type: AWS::Serverless::Function

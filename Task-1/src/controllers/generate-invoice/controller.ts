@@ -1,6 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { JsonSerializer } from 'typescript-json-serializer';
 import { v4 as UUIDv4 } from 'uuid';
+import * as moment from 'moment-timezone';
 import {
   IController as IGenerateInvoiceController,
   IResult as IGenerateInvoiceResult,
@@ -43,9 +44,26 @@ export default class Controller implements IGenerateInvoiceController {
 
       Promise.all(
         customers.map((customer) => {
+          const currentPlan = customer.getCurrentSubscriptionPlan();
+          const previousPlan = customer.getPreviousSubscriptionPlan();
+
+          const currentDate = moment.utc();
+
+          // Need to fetch the subscription here and save start date. For now a mock date is used.
+          const planStartDate = currentDate.add(30, 'days');
           // TODO: Invoice generation logic for each customer.
           const invoice = new Invoice();
-          invoice.build(UUIDv4(), customer.getID(), 100, 'generated');
+          invoice.build(
+            UUIDv4(),
+            customer.getID(),
+            this.getProratedPriceForBillingCycle(
+              currentPlan.getPricing().getPrice(),
+              previousPlan.getPricing().getPrice(),
+              currentDate.diff(planStartDate, 'days'),
+              currentPlan.getPricing().getBillingCycle()
+            ),
+            'generated'
+          );
           // Save the invoice in DB. This is to later update the invoice status for payment.
           this.emailService.sendEmail(
             'Invoice generated!',
@@ -72,7 +90,7 @@ export default class Controller implements IGenerateInvoiceController {
     return this.result;
   }
 
-  calculateProratedPriceForAMonth(
+  getProratedPriceForBillingCycle(
     currentPlanPrice: number,
     newPlanPrice: number,
     numberOfDaysUsed: number,

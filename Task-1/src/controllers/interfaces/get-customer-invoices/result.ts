@@ -1,4 +1,4 @@
-import Response from '../../../dto/billing-api/customer/id/invoices/GET';
+import { Response } from '../../../dto/billing-api/customer/id/invoices/GET';
 
 export default interface IResult {
   build(response: Response): void;

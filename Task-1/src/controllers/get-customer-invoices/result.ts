@@ -1,5 +1,5 @@
 import { injectable } from 'inversify';
-import { IResult } from '../interfaces/create-subscription-plan';
+import { IResult } from '../interfaces/get-customer-invoices';
 import { Response } from '../../dto/billing-api/customer/id/invoices/GET';
 
 @injectable()

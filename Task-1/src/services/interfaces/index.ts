@@ -3,6 +3,7 @@ import ICustomerService from './customer-service';
 import IEmailService from './email-service';
 import IPaymentService from './payment-service';
 import IInvoiceService from './invoice-service';
+import ISubscriptionService from '../subscription-service';
 
 export {
   ICustomerService,
@@ -10,4 +11,5 @@ export {
   IEmailService,
   IPaymentService,
   IInvoiceService,
+  ISubscriptionService,
 };

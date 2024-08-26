@@ -49,10 +49,9 @@ export default class Controller implements IProcessPaymentController {
   }
 
   async process(config: IProcessPaymentConfig): Promise<IProcessPaymentResult> {
-    let request, customerID;
+    const request = config.getRequest();
+    const customerID = config.getCustomerID();
     try {
-      request = config.getRequest();
-      customerID = config.getCustomerID();
       const validationResult = request.validate();
       if (validationResult.error) {
         console.log('Validation Error');

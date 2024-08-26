@@ -14,7 +14,11 @@ export default class Customer {
 
   @attribute()
   @JsonProperty({ name: 'currentSubscriptionPlan' })
-  private subscriptionPlan!: SubscriptionPlan;
+  private currentSubscriptionPlan!: SubscriptionPlan;
+
+  @attribute()
+  @JsonProperty({ name: 'previousSubscriptionPlan' })
+  private previousSubscriptionPlan!: SubscriptionPlan;
 
   @attribute()
   @JsonProperty({ name: 'isSubscriptionActive' })
@@ -28,8 +32,20 @@ export default class Customer {
     return this.id;
   }
 
-  setSubscriptionPlan(subscriptionPlan: SubscriptionPlan): void {
-    this.subscriptionPlan = subscriptionPlan;
+  getCurrentSubscriptionPlan(): SubscriptionPlan {
+    return this.currentSubscriptionPlan;
+  }
+
+  getPreviousSubscriptionPlan(): SubscriptionPlan {
+    return this.previousSubscriptionPlan;
+  }
+
+  setCurrentSubscriptionPlan(subscriptionPlan: SubscriptionPlan): void {
+    this.currentSubscriptionPlan = subscriptionPlan;
+  }
+
+  setPreviousSubscriptionPlan(subscriptionPlan: SubscriptionPlan): void {
+    this.previousSubscriptionPlan = subscriptionPlan;
   }
 
   activateSubscription(): void {
