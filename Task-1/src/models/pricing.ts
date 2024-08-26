@@ -1,10 +1,9 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
-import Pricing from './pricing';
 
 @JsonObject()
 export default class Request {
   @JsonProperty({ name: 'price' })
-  private price!: Pricing;
+  private price!: number;
 
   @JsonProperty({ name: 'currency' })
   private currency!: string;
