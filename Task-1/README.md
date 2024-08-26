@@ -87,4 +87,40 @@ This GitHub Actions workflow automates the deployment of a SAM app. The workflow
 
 By automating this process, the workflow ensures that any changes pushed to the main branch are consistently and reliably deployed to AWS without manual intervention. This approach uses GitHub Actions for continuous deployment by automatically handling the build and deployment steps for serverless app.
 
+## Design Approach
+
+### Project Structure and Design
+The project is implemented as a SAM application which is running on Node.js TypeScript.
+It is based on micro-services where each API is compiled and runs on its own.
+It follows a Handler, Controller, Service, Repository pattern. 
+This in my opinion ensures smooth development process along with loosely coupled code. 
+The handler is responsible for routing to appropriate controller which is responsible for the process. 
+The service class is a wrapper upon repository, which connects to the DB. The service class can also act as a processing unit whenever required for complex calculations.
+
+The project also contains configuration files such as eslint and prettier for code formatting.
+
+It has has setup for unit testing. Although due to time constrains, adding unit test cases was a challenge.
+
+### Implementation
+
+The major functionalities that were implemented are mentioned below:
+
+1. Create subscription plans with different pricing and billing cycles.
+2. Assign subscription plans to customers 
+3. PARTIAL IMPLEMENTATION: Generate invoices at the end of each billing cycle based on the customer’s subscription plan.
+4. Record payments made by customers and update invoice status accordingly.
+5. Handle failed payments and implement retry logic: This was implemented with SNS/SQS pipeline.
+6. Send email notifications to customers when an invoice is generated, when a payment is successful, or when a payment fails.
+
+There are a lot of places where the code can be improved.
+
+Please check the Swagger documentation for the API docs. Only the core APIs are implemented.
+
+
+
+
+
+
+
+
 
