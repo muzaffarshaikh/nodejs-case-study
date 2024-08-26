@@ -20,6 +20,10 @@ export default class Invoice {
   private paymentDate?: string;
 
   @attribute()
+  @JsonProperty({ name: 'status' })
+  private status!: string;
+
+  @attribute()
   @JsonProperty({ name: 'totalAmount' })
   private totalAmount!: number;
 
@@ -35,7 +39,11 @@ export default class Invoice {
     this.isPaid = value;
   }
 
-  build(id: string, customerID: string, totalAmount: number) {
+  getCustomerID(): string {
+    return this.customerID;
+  }
+
+  build(id: string, customerID: string, totalAmount: number, status: string) {
     this.id = id;
     this.customerID = customerID;
     this.isPaid = false;

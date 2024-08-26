@@ -1,0 +1,20 @@
+{
+    "invoices": [
+        {
+            "id": "b41b304e-894e-4a69-abfa-7ed1a7b4ef85",
+            "customerID": "fe7f7c2f-9d0f-4c0e-8be9-05ff35a98724",
+            "isPaid": true,
+            "paymentDate": "2024-08-23T21:01:34.000Z",
+            "status": "generated",
+            "totalAmount": 100.00
+        },
+        {
+            "id": "b41b304e-894e-4a69-abfa-7ed1a7b4ef85",
+            "customerID": "fe7f7c2f-9d0f-4c0e-8be9-05ff35a98724",
+            "isPaid": true,
+            "paymentDate": "2024-08-23T21:01:34.000Z",
+            "status": "generated",
+            "totalAmount": 100.00
+        }
+    ]
+}

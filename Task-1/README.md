@@ -82,3 +82,9 @@ sam local start-api
 ```
 
 ## Deployment Strategy
+
+This GitHub Actions workflow automates the deployment of a SAM app. The workflow is triggered whenever there is a push to the main branch of the repository. It sets up the Node.js environment, installs the necessary AWS CLI and SAM CLI tools, and then builds the SAM application using a container to ensure compatibility with the AWS Lambda runtime. The workflow deploys the application to AWS using the sam deploy command, with AWS credentials passed through GitHub Secrets.
+
+By automating this process, the workflow ensures that any changes pushed to the main branch are consistently and reliably deployed to AWS without manual intervention. This approach uses GitHub Actions for continuous deployment by automatically handling the build and deployment steps for serverless app.
+
+

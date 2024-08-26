@@ -45,7 +45,7 @@ export default class Controller implements IGenerateInvoiceController {
         customers.map((customer) => {
           // TODO: Invoice generation logic for each customer.
           const invoice = new Invoice();
-          invoice.build(UUIDv4(), customer.getID(), 100);
+          invoice.build(UUIDv4(), customer.getID(), 100, 'generated');
           // Save the invoice in DB. This is to later update the invoice status for payment.
           this.emailService.sendEmail(
             'Invoice generated!',

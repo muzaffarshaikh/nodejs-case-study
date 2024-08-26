@@ -11,9 +11,19 @@ const TYPES = {
   AssignSubscriptionPlanConfig: Symbol.for('AssignSubscriptionPlanConfig'),
   AssignSubscriptionPlanResult: Symbol.for('AssignSubscriptionPlanResult'),
 
-  ProcessPaymentController: Symbol.for('AssignSubscriptionPlanController'),
+  ProcessPaymentController: Symbol.for('ProcessPaymentController'),
   ProcessPaymentConfig: Symbol.for('ProcessPaymentControllerConfig'),
   ProcessPaymentResult: Symbol.for('ProcessPaymentControllerResult'),
+
+  GetCustomerInvoicesController: Symbol.for(
+    'GetCustomerInvoicesController'
+  ),
+  GetCustomerInvoicesConfig: Symbol.for(
+    'GetCustomerInvoicesControllerConfig'
+  ),
+  GetCustomerInvoicesResult: Symbol.for(
+    'GetCustomerInvoicesControllerResult'
+  ),
 
   GenerateInvoicesController: Symbol.for('GenerateInvoicesController'),
   GenerateInvoicesResult: Symbol.for('GenerateInvoicesResult'),
