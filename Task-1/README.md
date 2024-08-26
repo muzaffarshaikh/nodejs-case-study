@@ -89,38 +89,26 @@ By automating this process, the workflow ensures that any changes pushed to the 
 
 ## Design Approach
 
-### Project Structure and Design
-The project is implemented as a SAM application which is running on Node.js TypeScript.
-It is based on micro-services where each API is compiled and runs on its own.
-It follows a Handler, Controller, Service, Repository pattern. 
-This in my opinion ensures smooth development process along with loosely coupled code. 
-The handler is responsible for routing to appropriate controller which is responsible for the process. 
-The service class is a wrapper upon repository, which connects to the DB. The service class can also act as a processing unit whenever required for complex calculations.
+## Project Structure and Design
 
-The project also contains configuration files such as eslint and prettier for code formatting.
+The project is implemented as a SAM (Serverless Application Model) application running on Node.js with TypeScript. It is built using a microservices architecture, where each API is independently compiled and executed. This design follows a **Handler, Controller, Service, Repository** pattern, which ensures a smooth development process and promotes loosely coupled code.
 
-It has has setup for unit testing. Although due to time constrains, adding unit test cases was a challenge.
+- **Handler:** Routes requests to the appropriate controller.
+- **Controller:** Manages the main processing logic.
+- **Service:** Acts as a wrapper around the repository, handling complex business logic when required.
+- **Repository:** Directly interacts with the database to perform CRUD operations.
 
-### Implementation
+This layered architecture enhances code maintainability, scalability, and testability. The project also includes configuration files like ESLint and Prettier to enforce code formatting standards. Although unit testing was set up, adding comprehensive test cases was challenging due to time constraints.
 
-The major functionalities that were implemented are mentioned below:
+## Implementation
 
-1. Create subscription plans with different pricing and billing cycles.
-2. Assign subscription plans to customers 
-3. PARTIAL IMPLEMENTATION: Generate invoices at the end of each billing cycle based on the customer’s subscription plan.
-4. Record payments made by customers and update invoice status accordingly.
-5. Handle failed payments and implement retry logic: This was implemented with SNS/SQS pipeline.
-6. Send email notifications to customers when an invoice is generated, when a payment is successful, or when a payment fails.
+The following major functionalities were implemented:
 
-There are a lot of places where the code can be improved.
+1. **Create Subscription Plans:** Allows creation of subscription plans with different pricing and billing cycles.
+2. **Assign Subscription Plans to Customers:** Enables assigning a specific subscription plan to a customer.
+3. **PARTIAL IMPLEMENTATION: Generate Invoices:** Generates invoices at the end of each billing cycle based on the customer’s subscription plan.
+4. **Record Payments:** Tracks payments made by customers and updates invoice status accordingly.
+5. **Failed Payment Handling:** Implements retry logic for failed payments using an SNS/SQS pipeline.
+6. **Email Notifications:** Sends email notifications to customers when an invoice is generated, when a payment is successful, or when a payment fails.
 
-Please check the Swagger documentation for the API docs. Only the core APIs are implemented.
-
-
-
-
-
-
-
-
-
+There are several areas where the code can be further optimized and improved. For detailed API documentation, please refer to the [Billing-API-Swagger.yaml](./docs/Billing-API-Swagger.yaml) docs. Note that only the core APIs have been implemented.
