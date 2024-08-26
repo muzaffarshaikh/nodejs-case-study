@@ -32,8 +32,16 @@ export default class SubscriptionPlan {
   @JsonProperty({ name: 'status' })
   private status!: SubscriptionStatus;
 
+  getPricing(): Pricing {
+    return this.pricing;
+  }
+
   setID(value: string): void {
     this.id = value;
+  }
+
+  getID(): string {
+    return this.id;
   }
 
   setStatus(status: SubscriptionStatus): void {

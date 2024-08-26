@@ -25,6 +25,7 @@
     "http-status": "^1.5.3",
     "inversify": "^6.0.1",
     "joi": "^17.7.0",
+    "moment-timezone": "^0.5.45",
     "reflect-metadata": "^0.1.13",
     "typescript-json-serializer": "^6.0.1",
     "uuid": "^9.0.1"

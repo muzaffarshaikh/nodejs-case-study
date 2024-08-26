@@ -15,15 +15,9 @@ const TYPES = {
   ProcessPaymentConfig: Symbol.for('ProcessPaymentControllerConfig'),
   ProcessPaymentResult: Symbol.for('ProcessPaymentControllerResult'),
 
-  GetCustomerInvoicesController: Symbol.for(
-    'GetCustomerInvoicesController'
-  ),
-  GetCustomerInvoicesConfig: Symbol.for(
-    'GetCustomerInvoicesControllerConfig'
-  ),
-  GetCustomerInvoicesResult: Symbol.for(
-    'GetCustomerInvoicesControllerResult'
-  ),
+  GetCustomerInvoicesController: Symbol.for('GetCustomerInvoicesController'),
+  GetCustomerInvoicesConfig: Symbol.for('GetCustomerInvoicesControllerConfig'),
+  GetCustomerInvoicesResult: Symbol.for('GetCustomerInvoicesControllerResult'),
 
   GenerateInvoicesController: Symbol.for('GenerateInvoicesController'),
   GenerateInvoicesResult: Symbol.for('GenerateInvoicesResult'),
@@ -33,6 +27,9 @@ const TYPES = {
 
   SubscriptionPlanService: Symbol.for('SubscriptionPlanService'),
   SubscriptionPlanRepository: Symbol.for('SubscriptionPlanRepository'),
+
+  SubscriptionService: Symbol.for('SubscriptionService'),
+  SubscriptionRepository: Symbol.for('SubscriptionRepository'),
 
   CustomerService: Symbol.for('CustomerService'),
   CustomerRepository: Symbol.for('CustomerRepository'),
