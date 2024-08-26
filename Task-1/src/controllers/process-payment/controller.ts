@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { JsonSerializer } from 'typescript-json-serializer';
+import * as AWS from 'aws-sdk';
 import { v4 as UUIDv4 } from 'uuid';
 import {
   IController as IProcessPaymentController,
@@ -48,8 +49,10 @@ export default class Controller implements IProcessPaymentController {
   }
 
   async process(config: IProcessPaymentConfig): Promise<IProcessPaymentResult> {
+    let request, customerID;
     try {
-      const request = config.getRequest();
+      request = config.getRequest();
+      customerID = config.getCustomerID();
       const validationResult = request.validate();
       if (validationResult.error) {
         console.log('Validation Error');
@@ -71,7 +74,7 @@ export default class Controller implements IProcessPaymentController {
         invoiceID,
         request.getPaymentMethod(),
         request.getAmount(),
-        config.getCustomerID()
+        customerID
       );
 
       await this.paymentService.createPayment(payment);
@@ -101,6 +104,21 @@ export default class Controller implements IProcessPaymentController {
       this.result.build(response);
     } catch (error) {
       console.error('ProcessPaymentController.process() Error:', error);
+
+      // Incase of any error, publish the payment payload to SNS for retrying.
+      const sns = new AWS.SNS({ region: process.env.AWSRegion });
+      const requestRetryCount = request!.getRetryCount();
+      const retryCount = requestRetryCount ? requestRetryCount + 1 : 1;
+      request!.setRetryCount(retryCount);
+      request!.setCustomerID(customerID!);
+      const params = {
+        Message: JSON.stringify(request),
+        TopicArn: process.env.OrderRejectedEventTopicARN,
+      };
+
+      const publishedEvent = await sns.publish(params).promise();
+      console.log(`Published event: ${JSON.stringify(publishedEvent)}`);
+
       this.emailService.sendEmail(
         'Payment Failure',
         'Your payment with transaction ID: xxxxx has failed. Please wait for some time before retrying.',

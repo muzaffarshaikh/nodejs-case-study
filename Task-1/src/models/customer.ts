@@ -1,7 +1,6 @@
 import { JsonObject, JsonProperty } from 'typescript-json-serializer';
 import { attribute, hashKey } from '@aws/dynamodb-data-mapper-annotations';
 import SubscriptionPlan from './subscription-plan';
-import SubscriptionHistory from './subscription-history';
 
 @JsonObject()
 export default class Customer {
