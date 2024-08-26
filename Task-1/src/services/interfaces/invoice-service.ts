@@ -16,4 +16,9 @@ export default interface IInvoiceService {
    * @returns Invoice object
    */
   getInvoiceByID(invoiceID: string): Promise<Invoice>;
+  /**
+   * @param customerID The customer ID
+   * @returns Array of Invoice object
+   */
+  getInvoicesByCustomerID(customerID: string): Promise<Array<Invoice>>;
 }

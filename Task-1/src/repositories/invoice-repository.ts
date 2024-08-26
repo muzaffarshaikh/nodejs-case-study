@@ -49,4 +49,20 @@ export default class InvoiceRepository implements IInvoiceRepository {
       throw error;
     }
   }
+
+  async getInvoicesByCustomerID(customerID: string): Promise<Array<Invoice>> {
+    // TODO: This should be refactored to implement a GSI on DynamoDB for customerID Key.
+    try {
+      const invoices = [];
+      for await (const invoice of this.dataMapper.scan(Invoice)) {
+        if (invoice.getCustomerID() === customerID) {
+          invoices.push(invoice);
+        }
+      }
+      return invoices;
+    } catch (error: any) {
+      console.error('InvoiceRepository.getInvoiceByID() Error:', error);
+      throw error;
+    }
+  }
 }

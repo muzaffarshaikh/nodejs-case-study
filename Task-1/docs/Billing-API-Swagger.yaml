@@ -37,6 +37,47 @@ paths:
             example:
               name: "ENTERPRISE"
               pricing: { price: 50, currency: USD, billingCycle: 30 }
+
+    get:
+      tags:
+        - subscription-plan
+      summary: get all subscription plan
+      description: "API to get all subscription plan"
+      operationId: create-subscription-plan
+      responses:
+        "201":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                $ref: "#/components/schemas/GetAllSubscriptionPlansResponse"
+              example:
+                {
+                  "subscriptionPlans": [
+                    {
+                      "id": "8e40a4cb-4ce2-43c9-8380-315c4222cdf6",
+                      "name": "ENTERPRISE",
+                      "pricing": {
+                        "price": 50,
+                        "currency": "USD",
+                        "billingCycle": 30
+                      }
+                    }, {
+                      "id": "8e40a4cb-4ce2-43c9-8380-315c4222cdf6",
+                      "name": "ENTERPRISE",
+                      "pricing": {
+                        "price": 50,
+                        "currency": "USD",
+                        "billingCycle": 30
+                      }
+                    }
+                  ]
+                }
+        "400":
+          description: Invalid Request
+        "500":
+          description: Internal Server Error
   
     patch: 
       tags:
@@ -107,6 +148,37 @@ paths:
             example:
               subscriptionPlanID: "xxxx-xxxx-xxxx-xxxx"
 
+    get:
+      tags:   
+        - customer
+      summary: get subscription plan of a customer
+      description: "API to get subscription plan of a customer"
+      operationId: get-subscription-plan-of-customer
+      parameters:
+        - in: path
+          name: customerID
+          description: Customer ID
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetCustomerSubscriptionPlanResponse"
+              example:
+                {                
+                  id: "xxxx-xxxx-xxxx-xxxx",
+                  name: "ENTERPRISE",
+                  startDate: "2024-08-24T11:00:00.000Z"
+                }
+        "400":
+          description: Invalid Request
+        "500":
+          description: Internal Server Error
+
   "/customers/{customerID}/payments":
     post:
       tags:   
@@ -151,6 +223,54 @@ paths:
               paymentMethod: "credit_card"
               invoiceID: "INVOICE_2349876143"
 
+  "/customers/{customerID}/invoices":
+    get:
+      tags:   
+        - customer
+      summary: get all invoices for a customer
+      description: "API to get invoices for a specific customer"
+      operationId: get-customer-invoices
+      parameters:
+        - in: path
+          name: customerId
+          description: Customer ID
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: Paid Successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                $ref: "#/components/schemas/GetCustomerInvoicesResponse"
+              example:
+                {
+                    "invoices": [
+                        {
+                            "id": "b41b304e-894e-4a69-abfa-7ed1a7b4ef85",
+                            "customerID": "fe7f7c2f-9d0f-4c0e-8be9-05ff35a98724",
+                            "isPaid": true,
+                            "paymentDate": "2024-08-23T21:01:34.000Z",
+                            "status": "generated",
+                            "totalAmount": 100.00
+                        },
+                        {
+                            "id": "b41b304e-894e-4a69-abfa-7ed1a7b4ef85",
+                            "customerID": "fe7f7c2f-9d0f-4c0e-8be9-05ff35a98724",
+                            "isPaid": true,
+                            "paymentDate": "2024-08-23T21:01:34.000Z",
+                            "status": "generated",
+                            "totalAmount": 100.00
+                        }
+                    ]
+                }
+        "400":
+          description: Invalid Request
+        "500":
+          description: Internal Server Error
+
 components:
   schemas:
     CreateSubscriptionPlanRequest:
@@ -167,6 +287,22 @@ components:
           $ref: '#/components/schemas/Pricing'
 
     CreateSubscriptionPlanResponse:
+      type: object
+      required:
+        - id
+        - name
+        - pricing
+      properties:
+        id:
+          type: string
+        name:
+          type: enum
+          $ref: '#/components/schemas/SubscriptionPlanName'
+        pricing:
+          type: object
+          $ref: '#/components/schemas/Pricing'
+
+    GetCustomerSubscriptionPlanResponse:
       type: object
       required:
         - id
@@ -264,6 +400,54 @@ components:
         createdAt:
           type: string
           format: date-time-iso-8601
+
+    Invoice:
+      type: object
+      required:
+        - id
+        - customerID
+        - isPaid
+        - paymentDate
+        - status
+        - totalAmount
+      properties:
+        id:
+          type: string
+        customerID:
+          type: string
+        isPaid:
+          type: boolean
+        paymentDate:
+          type: string
+          format: date-time-iso-8601
+        status:
+          type: string
+        totalAmount:
+          type: number
+
+    GetCustomerInvoicesResponse:
+      type: object
+      required:
+        - invoices
+      properties:
+        invoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Invoice'
+          description: >-
+            Array of invoices
+
+    GetAllSubscriptionPlansResponse:
+      type: object
+      required:
+        - subscriptionPlans
+      properties:
+        subscriptionPlans:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreateSubscriptionPlanResponse'
+          description: >-
+            Array of subscriptionPlans
 
     AssignSubscriptionPlanToCustomerResponseSubscriptionPlan:
       type: object

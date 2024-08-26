@@ -90,6 +90,13 @@ export default class Controller implements IProcessPaymentController {
         Response
       ) as Response;
 
+      this.emailService.sendEmail(
+        'Payment Successful',
+        'Your payment with transaction ID: xxxxx has been successful.',
+        'frommail@test.com',
+        'tomail@test.com'
+      );
+
       response.build('COMPLETED', paymentID, createdAt);
       this.result.build(response);
     } catch (error) {

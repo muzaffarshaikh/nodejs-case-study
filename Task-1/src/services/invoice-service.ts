@@ -41,4 +41,13 @@ export default class InvoiceService implements IInvoiceService {
       throw error;
     }
   }
+
+  async getInvoicesByCustomerID(customerID: string): Promise<Array<Invoice>> {
+    try {
+      return await this.invoiceRepository.getInvoicesByCustomerID(customerID);
+    } catch (error) {
+      console.error('InvoiceService.getInvoicesByCustomerID() Error:', error);
+      throw error;
+    }
+  }
 }
